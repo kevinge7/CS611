@@ -143,6 +143,22 @@ public class Move {
         }
     }
 
+    public boolean checkAttackOrNot(int heroRow,int heroCol){
+        boolean canAttackOrNot;
+        if (board.getStatus()[heroCol][heroRow].getCurrentInfo().contains("M") ||
+                board.getStatus()[Math.min(7,heroCol+1)][heroRow].getCurrentInfo().contains("M") ||
+                board.getStatus()[Math.max(0,heroCol-1)][heroRow].getCurrentInfo().contains("M") ||
+                board.getStatus()[heroCol][Math.min(7,heroRow+1)].getCurrentInfo().contains("M") ||
+                board.getStatus()[Math.max(0, heroCol-1)][Math.min(7, heroRow+1)].getCurrentInfo().contains("M") ||
+                board.getStatus()[Math.min(7, heroCol+1)][Math.min(7, heroRow+1)].getCurrentInfo().contains("M")){
+            canAttackOrNot = true;
+        }
+        else {
+            canAttackOrNot = false;
+        }
+        return canAttackOrNot;
+    }
+
     public void moveUp() {
         //向上移动不需要检测能够碰到不可访问区域的问题
         //先检测hero的移动是否合法
@@ -165,10 +181,7 @@ public class Move {
                 checkInMarketOrnot();
             }
             //再检测英雄走这一步会不会有怪物在范围内，如果有的话 可以直接走过去开始攻击
-            else if (board.getStatus()[heroCol][heroRow+1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow + 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow - 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[Math.max(heroRow - 1, 0 )][Math.min(heroRow+1 , 7)].getCurrentInfo().contains("M")) {
+            else if (checkAttackOrNot(heroRow,heroCol) == true) {
                 System.out.println("Monster is in hero attack range. Do you want to attack? ");
                 System.out.println("1. Yes\n 2. No (Answer by number)");
                 int attackOrNot = inputValidator.getInt(3);
@@ -195,6 +208,7 @@ public class Move {
     public void afterBattle(){
         if(monsterWin == true){
             if (heroIndex == 1) {
+
                 l.generateH1();
             } else if (heroIndex == 2) {
                 l.generateH2();
@@ -204,12 +218,15 @@ public class Move {
             }
         }
         if (heroWin == true){
+            monstersList.get(heroIndex).LeaveCurrentLocation(boardDecorator);
             if (heroIndex == 1) {
                 l.generateM1();
             } else if (heroIndex == 2) {
+
                 l.generateM2();
             }
             else {
+
                 l.generateM3();
             }
         }
@@ -229,12 +246,9 @@ public class Move {
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
             }//检测是否有怪物在英雄的攻击范围
-            else if (board.getStatus()[heroCol][heroRow+1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow + 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow - 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[Math.max(heroRow - 1, 0 )][Math.min(heroRow+1 , 7)].getCurrentInfo().contains("M")) {
+            else if (checkAttackOrNot(heroRow,heroCol) == true) {
                 System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n 2. No (Answer by number)");
+                System.out.println("1. Yes\n2. No (Answer by number)");
                 int attackOrNot = inputValidator.getInt(3);
                 if(attackOrNot == 1){
                     attack = new Attack(heroList, monstersList, heroIndex);
@@ -267,12 +281,9 @@ public class Move {
             heroList.get(heroIndex).setHeroCol(heroCol);
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
-            } else if (board.getStatus()[heroCol][heroRow+1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow + 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow - 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[Math.max(heroRow - 1, 0 )][Math.min(heroRow+1 , 7)].getCurrentInfo().contains("M")) {
+            } else if (checkAttackOrNot(heroRow,heroCol) == true) {
                 System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n 2. No (Answer by number)");
+                System.out.println("1. Yes\n2. No (Answer by number)");
                 int attackOrNot = inputValidator.getInt(3);
                 if(attackOrNot == 1){
                     attack = new Attack(heroList, monstersList, heroIndex);
@@ -304,10 +315,7 @@ public class Move {
             heroList.get(heroIndex).setHeroCol(heroCol);
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
-            } else if (board.getStatus()[heroCol][heroRow+1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow + 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[heroCol][heroRow - 1].getCurrentInfo().contains("M") ||
-                    board.getStatus()[Math.max(heroRow - 1, 0 )][Math.min(heroRow+1 , 7)].getCurrentInfo().contains("M")) {
+            } else if (checkAttackOrNot(heroRow,heroCol) == true) {
                 System.out.println("Monster is in hero attack range. Do you want to attack? ");
                 System.out.println("1. Yes\n2. No (Answer by number)");
                 int attackOrNot = inputValidator.getInt(3);

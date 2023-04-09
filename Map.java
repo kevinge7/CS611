@@ -37,5 +37,10 @@ public class Map {
         String oldHeroInfo = oldCell.getCurrentInfo().substring(0,3);
         oldCell.setCurrentInfo(oldHeroInfo + "  ");
     }
+    public void MonsterLeave(int currentCol, int currentRow){
+        Cell oldCell = board.getStatus()[currentCol][currentRow];
+        String oldHeroInfo = oldCell.getCurrentInfo().substring(0,3);
+        oldCell.setCurrentInfo(oldHeroInfo + "  ");
+    }
 
 }

@@ -95,4 +95,9 @@ public abstract class Monsters {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    public void LeaveCurrentLocation(Map map){
+        map.MonsterLeave(this.monsterCol, this.monsterRow);
+
+    }
 }

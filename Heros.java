@@ -12,7 +12,7 @@ public abstract class Heros {
     private int HP;
     private int heroRow;
     private int heroCol;
-    private int index;
+    private int currentLane;
 
 
     public Heros(String name, int mana, int strength, int agility, int dexterity, int money, int experience) {
@@ -26,7 +26,7 @@ public abstract class Heros {
         this.HP = experience * 100;
         heroRow = 0;
         heroCol = 0;
-        index = 0;
+        currentLane = 0;
         items = new ArrayList<item>();
     }
 
@@ -122,10 +122,10 @@ public abstract class Heros {
     }
 
     public int getIndex() {
-        return index;
+        return currentLane;
     }
 
     public void setIndex(int index) {
-        this.index = index;
+        this.currentLane = index;
     }
 }

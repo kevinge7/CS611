@@ -72,7 +72,6 @@ public class launch {
     }
 
     public void generateM1(){
-
         int a = random.nextInt(monsterList.getMonsterList().size());
         MonsterInputs.add(a);
         realMonsters.add(monsterList.getMonsterList().get(a));
