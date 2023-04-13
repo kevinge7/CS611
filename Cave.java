@@ -1,3 +1,6 @@
+
+//Properties of a checkerboard
+
 public class Cave extends Cell{
     public Cave(){
         this.setLetter('C');

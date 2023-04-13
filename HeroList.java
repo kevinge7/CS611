@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-
+//initiate all the hero from file and store them into Arraylist
 public class HeroList {
     private static ArrayList<Heros> heroList;
     private String filePath1;

@@ -1,3 +1,5 @@
+
+//Properties of a checkerboard
 public class Inaccessible extends Cell{
     public Inaccessible(){
         this.setLetter('I');

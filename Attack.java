@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.util.Random;
 
-
+//In this class, hero can attack monster and monster can attack hero.
 public class Attack {
     private static ArrayList<Heros> heros;
     private static ArrayList<Monsters> monster;
-    private static boolean monsterWin = false;
-    private static boolean heroWin = false;
+    private static boolean monsterWin;
+    private static boolean heroWin;
     private static int MonsterHP;
     private static int heroNumber;
     private static int damage;
@@ -26,7 +26,9 @@ public class Attack {
         HeroList h = new HeroList();
         originalHero = h.getHeroList();
         this.heroInt = heroIndex;
-        this.monsterInt = heroIndex;
+        this.monsterInt = heros.get(heroIndex).getCurrentLane();
+        monsterWin = false;
+        heroWin = false;
         startBattle();
     }
 
@@ -54,21 +56,16 @@ public class Attack {
         BigDecimal bd1 = new BigDecimal(temp);
         bd1 = bd1.setScale(decimalPlaces, BigDecimal.ROUND_HALF_UP);
         damage = bd1.intValue()*2;
-            int monsterHP = monster.get(monsterInt).getHP()-damage;
-            System.out.println("Hero "+heros.get(heroInt).getName() + " made " +
-                    "\u001B[31m"+damage + "\u001B[0m"+ " damage to Monster " + monster.get(monsterInt).getName());
-            if (monsterHP > 0){
-                monster.get(monsterInt).setHP(monsterHP);
-            }
-            else{
-                System.out.println("Monster " + monster.get(monsterInt).getName() + " died!");
-                heroWin = true;
-                //monsterInt ++;
-//                if(monsterInt >= heroNumber){
-//                    heroWin = true;
-//                }
-            }
-
+        int monsterHP = monster.get(monsterInt).getHP()-damage;
+        System.out.println("Hero "+heros.get(heroInt).getName() + " made " +
+                "\u001B[31m"+damage + "\u001B[0m"+ " damage to Monster " + monster.get(monsterInt).getName());
+        if (monsterHP > 0){
+            monster.get(monsterInt).setHP(monsterHP);
+        }
+        else{
+            System.out.println("Monster " + monster.get(monsterInt).getName() + " died!");
+            heroWin = true;
+        }
     }
 
     //hero can use spell to attack

@@ -1,7 +1,7 @@
 public class CellFactory {
 
     public Cell create(int index){
-        /*指定生成什么cell， 1 2 3 4 -- P B C K*/
+        /*Specify what cell to generate， 1 2 3 4 -- P B C K*/
         switch (index){
             case 1:
                 return new Plain();

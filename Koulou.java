@@ -1,3 +1,6 @@
+
+
+//Properties of a checkerboard
 public class Koulou extends Cell{
 
     public Koulou(){

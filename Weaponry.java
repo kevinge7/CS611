@@ -1,3 +1,4 @@
+//initiate weapon information
 public class Weaponry extends item{
 
     private int damage;
@@ -8,7 +9,6 @@ public class Weaponry extends item{
         this.damage = damage;
         this.hands = hands;
     }
-
 
     public int getDamage() {
         return damage;

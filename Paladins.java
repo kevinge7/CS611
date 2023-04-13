@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 //initiate Paladin information
 public class Paladins extends Heros{
 

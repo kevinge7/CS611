@@ -3,7 +3,7 @@ import java.util.Random;
 
 
 
-
+//this class is to initiate the board
     public class Board {
 
         public static void main(String[] args) {

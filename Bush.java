@@ -1,3 +1,4 @@
+//Properties of a checkerboard
 public class Bush extends Cell{
 
     public Bush(){

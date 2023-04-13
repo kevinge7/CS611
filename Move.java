@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
+
+//define monster and hero move
 public class Move {
     private static Board board;
     private static ArrayList<Heros> heroList;
@@ -20,10 +21,9 @@ public class Move {
     private static ArrayList<Boolean> resultList;
     private launch l = new launch();
     private static boolean moveable;
-
-
-    /*用map来操作board*/
+    private DetectedBonusAttack dectedBonusAttack;
     private Map boardDecorator;
+    private static Boolean gameEndOrNot;
 
     public Move(Board board, ArrayList<Heros> heroList, ArrayList<Monsters> monstersList){
         this.board = board;
@@ -31,108 +31,124 @@ public class Move {
         this.monstersList = monstersList;
         heroWin = false;
         monsterWin = false;
-        this.boardDecorator = new Map(board);
+        this.boardDecorator = new Map(board, heroList);
         resultList = new ArrayList<>(Collections.nCopies(3, (Boolean) null));
         moveable = false;
+        gameEndOrNot = false;
         sel = "";
         run();
-
     }
+
     public void run(){
         while(true) {
-            for (int i = 0; i < resultList.size(); i++) {
-                if(resultList.get(i) == null){
-                    heroIndex = i;
-                }
-                else {
-                    break;
-                }
-
-                if (heroList.get(i).getHP() > 0) {
-                        int heroNum = i + 1;
-                  System.out.println("Please select a movement for H" + heroNum);
-                    System.out.println("• W/w: move up\n" +
-                            "• A/a: move left\n" +
-                            "• S/s: move down\n" +
-                            "• D/d: move right\n" +
-                            "• Q/q: quit game\n" +
-                            "• I/i: show information");
-                }
-
-                //get hero and monster current location
-                heroRow = heroList.get(heroIndex).getHeroRow();
-                heroCol = heroList.get(heroIndex).getHeroCol();
-                monsterRow = monstersList.get(heroIndex).getMonsterRow();
-                monsterCol = monstersList.get(heroIndex).getMonsterCol();
-//                System.out.println("this is hero row:" + heroRow);
-//                System.out.println("this is hero col:" + heroCol);
-//                System.out.println("this is Monster row:" + monsterRow);
-//                System.out.println("this is monster col:" + monsterCol);
-
-                Scanner input = new Scanner(System.in);
-
-                sel = input.next();
-                System.out.println(sel);
-                if (sel.equals("W")| sel.equals("w")) {
-                    moveUp();
-                    monsterMove();
-                } else if (sel.equals("A")|| sel.equals("a")) {
-                    moveLeft();
-                    monsterMove();
-                } else if (sel.equals("S")|| sel.equals("s")) {
-                    moveDown();
-                    monsterMove();
-                } else if (sel.equals("D")|| sel.equals("d")) {
-                    moveRight();
-                    monsterMove();
-                }
-                else if (sel.equals("Q") || sel.equals("q")){
-                    break;
-                } else if (sel.equals("i") || sel.equals("I")) {
-                    for(Heros h: heroList){
-                        System.out.println("Hero " + h.getName() + " left " + h.getHP());
+            if (gameEndOrNot == false) {
+                for (int i = 0; i < resultList.size(); i++) {
+                    if (resultList.get(i) == null) {
+                        heroIndex = i;
+                    } else {
+                        break;
                     }
-                    System.out.println();
-                }
-                if (moveable == false){
-                    i--;
-                }
-                if(heroWin == true){
-                    afterBattle();
-                }
-            }
-            if (sel.equals("Q") || sel.equals("q")){
-                break;
-            }
+                    moveable = false;
+                    if (heroList.get(i).getHP() > 0) {
+                        int heroNum = i + 1;
+                        board.display();
+                        System.out.println("Please select a movement for H" + heroNum);
+                        System.out.println("• W/w: move up\n" +
+                                "• A/a: move left\n" +
+                                "• S/s: move down\n" +
+                                "• D/d: move right\n" +
+                                "• T/t: teleport\n" +
+                                "• R/r: recall to Nexus\n" +
+                                "• Q/q: quit game\n" +
+                                "• I/i: show information");
+                    }
 
-            int check = 0;
-            for (Boolean obj: resultList){
-                if(obj instanceof Boolean){
-                    check++;
+                    //get hero and monster current location
+                    heroRow = heroList.get(heroIndex).getHeroRow();
+                    heroCol = heroList.get(heroIndex).getHeroCol();
+                    monsterRow = monstersList.get(heroIndex).getMonsterRow();
+                    monsterCol = monstersList.get(heroIndex).getMonsterCol();
+
+                    System.out.println("Monster row: "+monsterRow);
+                    System.out.println("Monster Col: " + monsterCol);
+
+                    sel = inputValidator.getChar();
+                    if (sel.equals("W") | sel.equals("w")) {
+                        moveUp();
+
+                        if (moveable){ heroWin = false; monsterMove();}
+                        if(gameEndOrNot == true){
+                            break;
+                        }
+                    } else if (sel.equals("A") || sel.equals("a")) {
+                        moveLeft();
+                        if (moveable){
+                            heroWin = false;
+                            monsterMove();}
+                    } else if (sel.equals("S") || sel.equals("s")) {
+                        moveDown();
+                        if (moveable){ heroWin = false;monsterMove();}
+                    } else if (sel.equals("D") || sel.equals("d")) {
+                        moveRight();
+                        if (moveable){ heroWin = false; monsterMove();}
+                    } else if (sel.equals("T") || sel.equals("t")) {
+                        moveable = true;
+                        try {
+                            Teleport teleport = new Teleport(heroList, heroIndex, boardDecorator);
+                            teleport.requestTeleport();
+                            if (heroList.get(heroIndex).getHeroRow() == 0) {
+                                checkInMarketOrnot();
+                            }
+                            monsterMove();
+                        } catch (NegativeArraySizeException e) {
+                            System.out.println("No available location to teleport.");
+                            moveable = false;
+                        }
+                    } else if (sel.equals("R") || sel.equals("r")) {
+                        moveable = true;
+                        try {
+                            Recall recall = new Recall(heroIndex, heroList, boardDecorator);
+                            recall.back();
+                            checkInMarketOrnot();
+                            monsterMove();
+                        } catch (OccupiedLocationException e) {
+                            System.out.println(e.getMessage());
+                            moveable = false;
+                        }
+                    } else if (sel.equals("Q") || sel.equals("q")) {
+                        break;
+                    } else if (sel.equals("i") || sel.equals("I")) {
+                        for (Heros h : heroList) {
+                            System.out.println("Hero " + h.getName() + " HP left " + h.getHP());
+                        }
+                        System.out.println();
+                    }
+                    if (!moveable) {
+                        i--;
+                    }
                 }
-                else {
-                    check = 0;
+                if (sel.equals("Q") || sel.equals("q")) {
                     break;
                 }
-            }
-            if(check == 3){
+        }
+        else{
+                System.out.println("Game end!");
                 break;
             }
         }
-        System.out.println("Conclusion:");
-        for(int jk = 0; jk<resultList.size();jk++){
-            int Num = jk+1;
-            if(resultList.get(jk) == true){
-                System.out.println("Hero " + Num + " Wins!");
-            }
-            else {
-                System.out.println("Monster " + Num + "Wins!");
-            }
-
-        }
-        System.out.println("Game end!");
     }
 
+    public void beginAttack(){
+        System.out.println("Monster is in hero attack range. Do you want to attack? ");
+        System.out.println("1. Yes\n2. No (Answer by number)");
+        int attackOrNot = inputValidator.getInt(3);
+        if(attackOrNot == 1){
+            dectedBonusAttack = new DetectedBonusAttack(heroList,monstersList,heroIndex,board);
+            heroWin = DetectedBonusAttack.getHeroWin();
+            monsterWin = DetectedBonusAttack.getMonsterWin();
+            afterBattle();
+        }
+    }
     public void checkInMarketOrnot(){
         System.out.println("Hero current in the market spot!");
         System.out.println("Do you want hero enter the market?");
@@ -143,7 +159,7 @@ public class Move {
         }
     }
 
-    public boolean checkAttackOrNot(int heroRow,int heroCol){
+    public boolean checkAttackOrNot(){
         boolean canAttackOrNot;
         if (board.getStatus()[heroCol][heroRow].getCurrentInfo().contains("M") ||
                 board.getStatus()[Math.min(7,heroCol+1)][heroRow].getCurrentInfo().contains("M") ||
@@ -152,6 +168,7 @@ public class Move {
                 board.getStatus()[Math.max(0, heroCol-1)][Math.min(7, heroRow+1)].getCurrentInfo().contains("M") ||
                 board.getStatus()[Math.min(7, heroCol+1)][Math.min(7, heroRow+1)].getCurrentInfo().contains("M")){
             canAttackOrNot = true;
+            board.display();
         }
         else {
             canAttackOrNot = false;
@@ -159,14 +176,31 @@ public class Move {
         return canAttackOrNot;
     }
 
+    public void afterBattle(){
+        if(monsterWin == true){
+            heroList.get(heroIndex).LeaveCurrentLocation(boardDecorator);
+            heroList.remove(heroIndex);
+            ReBorn reBorn = new ReBorn(heroList,monstersList,heroIndex,board);
+            heroList = reBorn.getRealHero();
+        }
+
+        if (heroWin == true){
+            monstersList.get(heroIndex).LeaveCurrentLocation(boardDecorator);
+            monstersList.remove(heroIndex);
+            ReBorn reBorn = new ReBorn(heroList,monstersList,heroIndex,board);
+            monstersList = reBorn.getRealMonster();
+        }
+    }
+
+//control hero move up behaviour
     public void moveUp() {
-        //向上移动不需要检测能够碰到不可访问区域的问题
-        //先检测hero的移动是否合法
+        //Moving up does not need to detect problems that can touch inaccessible areas
+        //First check whether the hero's movement is legal
         if (heroRow + 1 > monsterRow|| board.getStatus()[heroCol][heroRow+1].getCurrentInfo().contains("H")) {
             System.out.println("Your hero cannot make that move. ");
             moveable = false;
         }
-        //如果合法的话 先检测英雄走一步的话 英雄能不能赢
+            //If it is legal, first check if the hero takes a step, can the hero win
         else {
             moveable = true;
             heroRow ++;
@@ -174,87 +208,48 @@ public class Move {
             if (heroRow== 7) {
                 int heroNum = heroIndex + 1;
                 System.out.println("Hero " + heroNum + " Win!");
+                gameEndOrNot = true;
                 resultList.set(heroIndex,true);
             }
-            //在检测英雄的这一步是不是会进market
+            //Whether the step of detecting heroes will enter the market
             else if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
             }
-            //再检测英雄走这一步会不会有怪物在范围内，如果有的话 可以直接走过去开始攻击
-            else if (checkAttackOrNot(heroRow,heroCol) == true) {
-                System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n 2. No (Answer by number)");
-                int attackOrNot = inputValidator.getInt(3);
-                if(attackOrNot == 1){
-                    attack = new Attack(heroList, monstersList, heroIndex);
-                    heroWin = attack.getHeroWin();
-                    monsterWin = attack.getMonsterWin();
-                }
+            //Then check whether there will be monsters within the range of the hero taking this step, if so,
+            // you can go directly to start attacking
+            else if (checkAttackOrNot()) {
+                beginAttack();
             }
-            if(monsterWin == false){
+//            if(monsterWin == false){
                 int[] newPosition = new int[2];
                 newPosition[0] = heroCol;
                 newPosition[1] = heroRow;
                 int[] oldPosition = new int[2];
                 oldPosition[0] = heroCol;
                 oldPosition[1] = heroRow-1;
-                boardDecorator.HeroMove(heroIndex, newPosition , oldPosition);
-                board.display();
-            }
-
+                boardDecorator.HeroMove(heroIndex,heroList, newPosition , oldPosition);
+//            }
         }
     }
-
-    public void afterBattle(){
-        if(monsterWin == true){
-            if (heroIndex == 1) {
-
-                l.generateH1();
-            } else if (heroIndex == 2) {
-                l.generateH2();
-            }
-            else {
-                l.generateH3();
-            }
-        }
-        if (heroWin == true){
-            monstersList.get(heroIndex).LeaveCurrentLocation(boardDecorator);
-            if (heroIndex == 1) {
-                l.generateM1();
-            } else if (heroIndex == 2) {
-
-                l.generateM2();
-            }
-            else {
-
-                l.generateM3();
-            }
-        }
-    }
-
+//control hero move down behaviour
     public void moveDown(){
-        //向下移动不需要检测移动是否合法 因为向下移动不会使英雄越过怪兽 需要检测会不会超过底线的移动
+        //Moving down does not need to detect whether the movement is legal, because moving down will not make the
+        // hero over the monster, it needs to detect whether the movement will exceed the bottom line
         if(heroRow == 0|| board.getStatus()[heroCol][heroRow-1].getCurrentInfo().contains("H")){
             System.out.println("You cannot make this move!");
             moveable = false;
 
-        } //如果合法的话 先检测是否会进入market
+        } //If it is legal, first check whether it will enter the market
         else {
             moveable = true;
             heroRow --;
             heroList.get(heroIndex).sethHeroRow(heroRow);
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
-            }//检测是否有怪物在英雄的攻击范围
-            else if (checkAttackOrNot(heroRow,heroCol) == true) {
-                System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n2. No (Answer by number)");
-                int attackOrNot = inputValidator.getInt(3);
-                if(attackOrNot == 1){
-                    attack = new Attack(heroList, monstersList, heroIndex);
-                    heroWin = attack.getHeroWin();
-                    monsterWin = attack.getMonsterWin();
-                }
+            }//Detect if there is a monster in the hero's attack range
+            else if (checkAttackOrNot()) {
+                beginAttack();
+            }
             }
             if(monsterWin == false){
                 int[] newPosition = new int[2];
@@ -263,12 +258,11 @@ public class Move {
                 int[] oldPosition = new int[2];
                 oldPosition[0] = heroCol;
                 oldPosition[1] = heroRow + 1;
-                boardDecorator.HeroMove(heroIndex, newPosition , oldPosition);
-                board.display();
+                boardDecorator.HeroMove(heroIndex, heroList, newPosition , oldPosition);
             }
         }
-    }
 
+//control hero move left behaviour
     public void moveLeft(){
         if(heroCol == 0 || board.getStatus()[heroCol-1][heroRow] instanceof Inaccessible
                 || board.getStatus()[heroCol-1][heroRow].getCurrentInfo().contains("H")){
@@ -281,16 +275,10 @@ public class Move {
             heroList.get(heroIndex).setHeroCol(heroCol);
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
-            } else if (checkAttackOrNot(heroRow,heroCol) == true) {
-                System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n2. No (Answer by number)");
-                int attackOrNot = inputValidator.getInt(3);
-                if(attackOrNot == 1){
-                    attack = new Attack(heroList, monstersList, heroIndex);
-                    heroWin = attack.getHeroWin();
-                    monsterWin = attack.getMonsterWin();
-                }
+            }   else if (checkAttackOrNot()) {
+                beginAttack();
             }
+
             if(monsterWin == false){
                 int[] newPosition = new int[2];
                 newPosition[0] = heroCol;
@@ -298,12 +286,11 @@ public class Move {
                 int[] oldPosition = new int[2];
                 oldPosition[0] = heroCol + 1;
                 oldPosition[1] = heroRow;
-                boardDecorator.HeroMove(heroIndex, newPosition , oldPosition);
-                board.display();
+                boardDecorator.HeroMove(heroIndex, heroList, newPosition , oldPosition);
             }
         }
     }
-
+//control hero move right behaviour
     public void moveRight(){
         if(heroCol+1>=8 || board.getStatus()[heroCol+1][heroRow] instanceof Inaccessible){
             System.out.println("Hero cannot make this move.");
@@ -315,15 +302,8 @@ public class Move {
             heroList.get(heroIndex).setHeroCol(heroCol);
             if (board.getStatus()[heroCol][heroRow] instanceof Nexus) {
                 checkInMarketOrnot();
-            } else if (checkAttackOrNot(heroRow,heroCol) == true) {
-                System.out.println("Monster is in hero attack range. Do you want to attack? ");
-                System.out.println("1. Yes\n2. No (Answer by number)");
-                int attackOrNot = inputValidator.getInt(3);
-                if(attackOrNot == 1){
-                    attack = new Attack(heroList, monstersList, heroIndex);
-                    heroWin = attack.getHeroWin();
-                    monsterWin = attack.getMonsterWin();
-                }
+            }  else if (checkAttackOrNot()) {
+                beginAttack();
             }
             if(monsterWin == false){
                 int[] newPosition = new int[2];
@@ -332,14 +312,13 @@ public class Move {
                 int[] oldPosition = new int[2];
                 oldPosition[0] = heroCol - 1;
                 oldPosition[1] = heroRow;
-                boardDecorator.HeroMove(heroIndex, newPosition , oldPosition);
-                board.display();
+                boardDecorator.HeroMove(heroIndex,heroList, newPosition , oldPosition);
             }
         }
     }
-
+//this can control monster move. monster will always go down if legal
     public void monsterMove(){
-        if (monsterRow > heroRow){
+        if (monsterRow > boardDecorator.getHighestRowLane(heroIndex)){
             monsterRow --;
             int[] newPosition = new int[2];
             newPosition[0] = monsterCol;
@@ -349,13 +328,16 @@ public class Move {
             oldPosition[1] = monsterRow + 1;
             boardDecorator.MonsterMove(heroIndex, newPosition, oldPosition );
             monstersList.get(heroIndex).setMonsterRow(monsterRow);
-            //board.display();
+
+            if (checkAttackOrNot()) {
+                beginAttack();
+            }
         }
-        else if(monsterRow - 1 == 0) {
+        if(monsterRow - 1 == 0) {
+            gameEndOrNot = true;
             resultList.set(heroIndex,false);
             int monsterNum = heroIndex + 1;
             System.out.println("Monster " +monsterNum + " Wins!" );
         }
     }
-
 }

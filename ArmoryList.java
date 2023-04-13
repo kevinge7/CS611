@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-
+//initiate all the Armory from file and store them into ArrayList
 public class ArmoryList {
     private ArrayList<Armory> armoryList;
     private String filepath;

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-//initial hero basic information
-public abstract class Heros {
+//define hero basic information
+public abstract class Heros implements Character {
     private String name;
     private int level;
     private int MP;
@@ -14,6 +14,8 @@ public abstract class Heros {
     private int heroCol;
     private int currentLane;
 
+    private int[] homeLocation;
+
 
     public Heros(String name, int mana, int strength, int agility, int dexterity, int money, int experience) {
         this.name = name;
@@ -26,12 +28,20 @@ public abstract class Heros {
         this.HP = experience * 100;
         heroRow = 0;
         heroCol = 0;
-        currentLane = 0;
+        this.currentLane = 0;
         items = new ArrayList<item>();
     }
 
     public int getHeroRow(){
         return heroRow;
+    }
+
+    public int getCurrentLane(){
+        return this.currentLane;
+    }
+
+    public void setCurrentLane(int currentLane) {
+        this.currentLane = currentLane;
     }
 
     public void sethHeroRow(int heroRow){
@@ -121,11 +131,24 @@ public abstract class Heros {
         this.heroCol = heroCol;
     }
 
-    public int getIndex() {
-        return currentLane;
+    public int[] getHomeLocation() {
+        return homeLocation;
     }
 
-    public void setIndex(int index) {
-        this.currentLane = index;
+    public void setHomeLocation(int homeLocationCol, int homeLocationRow) {
+        int[] location = new int[2];
+        location[0] = homeLocationCol;
+        location[1] = homeLocationRow;
+        this.homeLocation = location;
+    }
+
+    public void setHeroRow(int heroRow) {
+        this.heroRow = heroRow;
+    }
+@Override
+    public void LeaveCurrentLocation(Map map){
+        map.HeroLeave(this.getHeroCol(), this.getHeroRow());
+
+
     }
 }

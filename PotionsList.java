@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-
+//define all the potion from files
 public class PotionsList {
     private String filePath;
     private ArrayList<item> potionsList;
@@ -22,7 +22,6 @@ public class PotionsList {
 
         InputStream inputStream = ArmoryList.class.getClassLoader().getResourceAsStream(filePath);
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        //BufferedReader br = new BufferedReader(inputStreamReader)
 
         Scanner scanner = new Scanner(inputStreamReader);
         scanner.nextLine(); // skip first line

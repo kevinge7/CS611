@@ -1,3 +1,4 @@
+//define all the item in this class. All other items are inheritance from this class.
 public abstract class item {
     private String Name;
     private int cost;

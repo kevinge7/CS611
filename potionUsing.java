@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+//this will return potion used and remove in Attack class.
+//Attack class will catch this information and made modification
 public class potionUsing {
     private static ArrayList<Heros> heroes;
     private static ArrayList<item> items;
@@ -14,8 +16,6 @@ public class potionUsing {
         using();
 
     }
-    //this will return potion used and remove in Attack class.
-    //Attack class will catch this information and made modification
     public Potions getUsedPotion(){
         return used;
     }

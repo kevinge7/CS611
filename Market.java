@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
+// this is marker
 public class Market {
     PotionsList p = new PotionsList();
     SpellList s = new SpellList();
@@ -14,6 +14,7 @@ public class Market {
     public Market(ArrayList<Heros> heros,int heroIndex){
         this.heros = heros;
         this.heroIndex = heroIndex;
+        System.out.println("Welcome to Market!!!");
         run();
     }
     public ArrayList<Heros> getHeros(){
@@ -21,13 +22,13 @@ public class Market {
     }
 //select hero to buy or sell item
     public Heros heroSelect(){
-
         Heros selected = heros.get(heroIndex);
 
         System.out.println("You selected "+ selected.getName()+ "\nMoney left: "+selected.getMoney());
         System.out.println("");
         return heros.get(heroIndex);
     }
+
 
 //if user want to sell hero's item, program will go inside this method
     public void sellItem(){
@@ -36,7 +37,8 @@ public class Market {
         ArrayList<item> itemList;
         itemList = selected.getItems();
         if (itemList.size() == 0) {
-            System.out.println("Item list is null");
+            System.out.println("There is nothing to sell");
+            run();
         }
         else {
             System.out.print("Here is " + selected.getName() + " item list: ");
@@ -94,7 +96,7 @@ public class Market {
             while (buyOrNot == true) {
                 System.out.println("Here is Potions list, make selection from below");
                 p.print();
-                int PotionSelected = inputValidator.getInt(14);
+                int PotionSelected = inputValidator.getInt(p.getPotionsList().size())-1;
                 //pass hero information from here and return error if hero cannot buy the item
                 Heros selected = heroSelect();
                 if(selected.getLevel() >= p.getPotionsList().get(PotionSelected).getRequiredLevel()) {
@@ -164,8 +166,6 @@ public class Market {
     }
 //the interface will first show when hero first enter the market
     public void run(){
-        Scanner input = new Scanner(System.in);
-        System.out.println("Welcome to Market!!!");
         System.out.println("Please enter one of the options(Answer by number)");
         System.out.println("1. BUY");
         System.out.println("2. SELL");

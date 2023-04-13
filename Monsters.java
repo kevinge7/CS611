@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-//initiate monster information
-public abstract class Monsters {
+//define monster information
+public abstract class Monsters implements  Character{
     private String name;
     private int experiences;
     private int level;
@@ -24,6 +24,7 @@ public abstract class Monsters {
         this.HP = level * 100;
     }
 
+@Override
     public String getName() {
         return name;
     }
@@ -96,8 +97,10 @@ public abstract class Monsters {
         this.index = index;
     }
 
+    @Override
     public void LeaveCurrentLocation(Map map){
         map.MonsterLeave(this.monsterCol, this.monsterRow);
+
 
     }
 }

@@ -1,8 +1,8 @@
 
-
+//this is cell class which define each cell in the board.
 public abstract class Cell {
 
-    /*是否有英雄占领*/
+    /*Whether Hero is occupied*/
     private boolean isHeroOccupied;
 
     private boolean isMonsterOccupied;
@@ -16,9 +16,6 @@ public abstract class Cell {
     private String heroInfo = "  ";
     private String monsterInfo = "  ";
 
-
-    /*是不是有英雄占据*/
-    /*Probability of encoutering a monster*/
 
     public Cell(){
 
@@ -66,7 +63,7 @@ public abstract class Cell {
 
 
     public boolean isHeroOccupied() {
-        return isHeroOccupied;
+        return currentInfo.contains("H");
     }
 
     public boolean isMonsterOccupied() {

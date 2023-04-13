@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-
+//initiate all the monsters from the files
 public class MonsterList {
     private static ArrayList<Monsters> monsterList;
     private String filePath1;
